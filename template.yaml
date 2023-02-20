@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: tamiya-events-rss-generator
+
+Globals:
+  Function:
+    Timeout: 60
+
+Parameters:
+  S3BucketName:
+    Type: String
+
+Resources:
+  GenerateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: generate/
+      Handler: generate
+      Runtime: go1.x
+      Architectures:
+        - x86_64
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: s3:*
+              Resource: !Sub ${S3Bucket.Arn}/*
+      Events:
+        InvocationLevel:
+          Type: Schedule
+          Properties:
+            Schedule: "cron(0 0 * * ? *)"
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref S3BucketName
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      AccessControl: PublicRead
+
+Outputs:
+  GenerateFunction:
+    Description: "Generate Function ARN"
+    Value: !GetAtt GenerateFunction.Arn

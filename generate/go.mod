@@ -1,8 +1,9 @@
-module github.com/ngs/tamiya-events-rss-generator
+module generate
 
 go 1.19
 
 require (
+	github.com/aws/aws-lambda-go v1.37.0
 	github.com/aws/aws-sdk-go v1.44.205
 	github.com/gocolly/colly v1.2.0
 )

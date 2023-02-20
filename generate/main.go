@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -16,7 +17,7 @@ import (
 
 const StartURL = "https://www.tamiya.com/japan/event/index.html?genre_item=event_category%2cevent_type%2cevent_pref&cmdarticlesearch=1&absolutepage=1&field_sort=d&sortkey=sort_posd"
 
-func main() {
+func handler() {
 	c := colly.NewCollector()
 	rss := &RSS{
 		Version:     "2.0",
@@ -94,4 +95,8 @@ func finish(rss *RSS) {
 	}
 
 	fmt.Println(result.UploadID)
+}
+
+func main() {
+	lambda.Start(handler)
 }
